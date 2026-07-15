@@ -49,21 +49,25 @@ class Server:
         """
         indexed_data = self.indexed_dataset()
 
-        # Doğrulama (Assert checks)
-        assert index is not None and 0 <= index < len(indexed_data)
+        # Eger index None-dirsa, 0-dan baslayir
+        if index is None:
+            index = 0
+
+        # Dogrulama (Assert yoxlamalari)
+        assert isinstance(index, int) and 0 <= index < len(indexed_data)
         assert isinstance(page_size, int) and page_size > 0
 
         data = []
         current_index = index
 
-        # page_size qədər mövcud (silinməmiş) elementi toplayırıq
+        # page_size qeder silinmemis elementi yigiriq
         while len(data) < page_size and current_index < len(indexed_data):
             item = indexed_data.get(current_index)
             if item is not None:
                 data.append(item)
             current_index += 1
 
-        # Növbəti sorğulanacaq indeks, while dövrünün dayandığı current_index-dir
+        # Novbeti sorğu indeksi
         next_index = current_index if current_index < len(indexed_data) else None
 
         return {
