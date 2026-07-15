@@ -1,4 +1,4 @@
-// Updates documents in the school collection by adding an address attribute
+// Updates documents with name "Holberton school" to add address attribute
 db.school.update(
   { name: "Holberton school" },
   { $set: { address: "972 Mission street" } },
