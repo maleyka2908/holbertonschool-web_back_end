@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
-Deletion-resilient hypermedia pagination.
+Deletion-resilient hypermedia pagination
 """
+
 import csv
-from typing import List, Dict, Any
+import math
+from typing import List, Dict
 
 
 class Server:
@@ -31,6 +33,7 @@ class Server:
         """
         if self.__indexed_dataset is None:
             dataset = self.dataset()
+            truncated_dataset = dataset[:1000]
             self.__indexed_dataset = {
                 i: dataset[i] for i in range(len(dataset))
             }
@@ -38,41 +41,27 @@ class Server:
 
     def get_hyper_index(self, index: int = None, page_size: int = 10) -> Dict:
         """
-        Return a dictionary with deletion-resilient pagination information.
-
-        Args:
-            index (int): The current start index of the return page.
-            page_size (int): The current page size.
-
-        Returns:
-            Dict: Dictionary containing pagination metadata and data.
+        Deletion-resilient hypermedia pagination logic
         """
-        indexed_data = self.indexed_dataset()
-
-        # Eger index None-dirsa, 0-dan baslayir
+        indexed_dataset = self.indexed_dataset()
+        
         if index is None:
             index = 0
 
-        # Dogrulama (Assert yoxlamalari)
-        assert isinstance(index, int) and 0 <= index < len(indexed_data)
+        assert isinstance(index, int) and 0 <= index < len(indexed_dataset)
         assert isinstance(page_size, int) and page_size > 0
 
         data = []
         current_index = index
 
-        # page_size qeder silinmemis elementi yigiriq
-        while len(data) < page_size and current_index < len(indexed_data):
-            item = indexed_data.get(current_index)
-            if item is not None:
-                data.append(item)
+        while len(data) < page_size and current_index < len(indexed_dataset):
+            if current_index in indexed_dataset:
+                data.append(indexed_dataset[current_index])
             current_index += 1
 
-        # Novbeti sorğu indeksi
-        next_index = current_index if current_index < len(indexed_data) else None
-
         return {
-            "index": index,
-            "data": data,
-            "page_size": len(data),
-            "next_index": next_index
+            'index': index,
+            'next_index': current_index,
+            'page_size': page_size,
+            'data': data,
         }
