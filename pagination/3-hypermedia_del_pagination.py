@@ -44,7 +44,7 @@ class Server:
         Deletion-resilient hypermedia pagination logic
         """
         indexed_dataset = self.indexed_dataset()
-        
+
         if index is None:
             index = 0
 
